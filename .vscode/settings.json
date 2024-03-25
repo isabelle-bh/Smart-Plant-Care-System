@@ -1,6 +1,8 @@
 {
   "files.associations": {
     "stdint.h": "c",
-    "stdio.h": "c"
+    "stdio.h": "c",
+    "plant_profile.h": "c",
+    "adc_functions.h": "c"
   }
 }
