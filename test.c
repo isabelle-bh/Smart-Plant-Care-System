@@ -31,3 +31,9 @@ int readADCChannel(int channel)
         return -1;
     }
 }
+
+int main()
+{
+    float a = readADCChannel(1);
+    return 0;
+}
