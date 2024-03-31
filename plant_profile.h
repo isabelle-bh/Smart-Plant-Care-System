@@ -1,5 +1,5 @@
-#ifndef MODULE1_H
-#define MODULE1_H
+#ifndef PLANT_PROFILE_H
+#define PLANT_PROFILE_H
 
 struct species_profile
 {
@@ -30,4 +30,4 @@ float get_humidity(int humidity_channel);
 
 extern struct species_profile plant_profiles[];
 
-#endif
+#endif /* PLANT_PROFILE_H */

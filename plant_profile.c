@@ -29,6 +29,11 @@ float get_humidity(int humidity_channel)
     return humidity_float;
 }
 
+struct species_profile *get_profiles(void)
+{
+    return plant_profiles;
+}
+
 struct species_profile plant_profiles[] = {
     {"Golden Barrel Cactus", 20.0, 40.0, 20, 14},
     {"Broccoli Microgreen", 60.0, 50.0, 30, 8},
