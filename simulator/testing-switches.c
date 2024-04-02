@@ -11,7 +11,6 @@ int readADCChannel(int channel);
 
 #endif /* ADC_FUNCTIONS_H */
 
-
 #define ADC_C0 0x00000000       // 0xFF204000       // read channel 0
 #define ADC_C1 0x00000000       // 0xFF204004       // write 1 to bit 15 for auto-update
 #define mask_12_bits 0x00000FFF // 12 lsb to read channel input
@@ -142,28 +141,37 @@ volatile struct species_profile current_plant;
 
 volatile int timer_done = 0; // 1 when it's been x amount of time
 
-int checkTimer(void) {
-    if (timer_done) {
+int checkTimer(void)
+{
+    if (timer_done)
+    {
         return 1;
-    } else {
+    }
+    else
+    {
         return 0;
     }
 }
 
-void setCurrentPlant(void) {
+void setCurrentPlant(void)
+{
     volatile unsigned int *switchPtr = (volatile unsigned int *)SW_BASE;
     unsigned int switchState = *switchPtr;
 
-    if (switchState < NUM_SWITCHES) {
+    if (switchState < NUM_SWITCHES)
+    {
         current_plant = plant_profiles[switchState];
         printf("Current plant set to: %s\n", current_plant.name);
         displayHex(switchState); // displaying plant number on LEDs
-    } else {
+    }
+    else
+    {
         printf("Invalid switch state: %u\n", switchState);
     }
 }
 
-void displayHex(unsigned int number) {
+void displayHex(unsigned int number)
+{
     volatile unsigned int *hexDisplayPtr = (volatile unsigned int *)LED_BASE;
     unsigned int patterns[5] = {
         0x3F, // 0
@@ -173,16 +181,20 @@ void displayHex(unsigned int number) {
         0x66  // 4
     };
 
-    if (number >= 0 && number < 4) {
+    if (number >= 0 && number < 4)
+    {
         *hexDisplayPtr = patterns[number]; // send pattern to display
-    } else {
+    }
+    else
+    {
         *hexDisplayPtr = 0x00; // turn off display for invalid numbers
     }
 }
 
-
-int main(void) {
-    while (1) {
+int main(void)
+{
+    while (1)
+    {
         setCurrentPlant();
         // int moisture = get_moisture(1);
     }

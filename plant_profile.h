@@ -14,7 +14,7 @@ struct plant_environment
 {
     float sqft;         // Between 0.5 and 3
     int light_exposure; // 1: low, 2: medium, 3: high/direct (for simplicity)
-    int soil_volume;    // to determine how much water
+    float soil_volume;  // to determine how much water
     float humidity;
 };
 

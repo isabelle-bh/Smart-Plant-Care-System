@@ -26,7 +26,9 @@
 extern struct species_profile plant_profiles[];
 #define NUM_SWITCHES 4
 
+volatile struct plant_status plant_readings;
 volatile struct species_profile current_plant;
+
 volatile int *HEX_ptr = (int *)HEX3_HEX0_BASE; // hex address
 volatile int *HEX_ptr2 = (int *)HEX3_HEX1_BASE;
 
@@ -48,18 +50,20 @@ int getButtonInputs(void)
 {
     // Declare a pointer to the button's memory-mapped I/O address
     volatile unsigned int *buttonPtr = (unsigned int *)BTN_BASE;
-
-    // Read the state of the button
     unsigned int buttonState = *buttonPtr;
 
-    // the button is pressed (buttonState is non-zero)
-    if (buttonState)
-    {
-        // Get the soil moisture of the current plant
-        int soil_moisture = current_plant.soil_moisture;
+    // Read the state of the button
 
-        // Display the soil moisture on the HEX displays
-        displayHex((float)soil_moisture);
+    // the button is pressed (buttonState is non-zero)
+    if (buttonState == 1)
+    {
+        float soil_moisture = plant_readings.soil_moisture;
+        displayHex(soil_moisture);
+    }
+    else if (buttonState == 2)
+    {
+        float humidity = plant_readings.humidity;
+        displayHex(humidity);
     }
 
     // Return the state of the button
