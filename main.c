@@ -46,6 +46,24 @@ int checkTimer(void)
 
 int getButtonInputs(void)
 {
+    // Declare a pointer to the button's memory-mapped I/O address
+    volatile unsigned int *buttonPtr = (unsigned int *)BTN_BASE;
+
+    // Read the state of the button
+    unsigned int buttonState = *buttonPtr;
+
+    // the button is pressed (buttonState is non-zero)
+    if (buttonState)
+    {
+        // Get the soil moisture of the current plant
+        int soil_moisture = current_plant.soil_moisture;
+
+        // Display the soil moisture on the HEX displays
+        displayHex((float)soil_moisture);
+    }
+
+    // Return the state of the button
+    return buttonState;
 }
 
 // this function reads the value from the switch memory-mapped register
