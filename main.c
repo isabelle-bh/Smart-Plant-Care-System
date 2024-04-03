@@ -52,10 +52,13 @@ int checkTimer(void)
     }
 }
 
-void delay(int seconds) {
+void delay(int seconds)
+{
     volatile unsigned long i, j;
-    for (i = 0; i < seconds; i++) {
-        for (j = 0; j < 1000000; j++) {
+    for (i = 0; i < seconds; i++)
+    {
+        for (j = 0; j < 1000000; j++)
+        {
             // do nothing
         }
     }
@@ -145,7 +148,8 @@ int main(void)
     *led_dir_ptr = 0x000003FF;
     *led_base_ptr = 0x00000000;
 
-    while (1) {
+    while (1)
+    {
         setCurrentPlant();
         displayLight();
         readSensors();
