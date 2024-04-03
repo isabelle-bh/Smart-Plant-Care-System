@@ -1,0 +1,6 @@
+{
+    "files.associations": {
+        "adc_functions.h": "c",
+        "plant_profile.h": "c"
+    }
+}
