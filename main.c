@@ -52,6 +52,31 @@ int checkTimer(void)
     }
 }
 
+void delay(int seconds) {
+    volatile unsigned long i, j;
+    for (i = 0; i < seconds; i++) {
+        for (j = 0; j < 1000000; j++) {
+            // do nothing
+        }
+    }
+}
+
+void displayHex(float value)
+{
+
+    int num = round(value);
+    int thousands = num / 1000 % 10;
+    int hundreds = num / 100 % 10;
+    int tens = num / 10 % 10;
+    int ones = num % 10;
+
+    int hex_code[10] = {0x3F, 0x06, 0x5B, 0x4F, 0x66, 0x6D, 0xFD, 0x07, 0x7F, 0x67};
+    int first_2_digits = hex_code[hundreds] + (hex_code[thousands] << 8);
+    int last_4_digits = (hex_code[tens] << 24) + (hex_code[ones] << 16);
+    *(HEX_ptr2) = first_2_digits;
+    *(HEX_ptr) = last_4_digits;
+}
+
 int getButtonInputs(void)
 {
     // Declare a pointer to the button's memory-mapped I/O address
@@ -94,22 +119,6 @@ void setCurrentPlant(void)
     }
 }
 
-void displayHex(float value)
-{
-
-    int num = round(value);
-    int thousands = num / 1000 % 10;
-    int hundreds = num / 100 % 10;
-    int tens = num / 10 % 10;
-    int ones = num % 10;
-
-    int hex_code[10] = {0x3F, 0x06, 0x5B, 0x4F, 0x66, 0x6D, 0xFD, 0x07, 0x7F, 0x67};
-    int first_2_digits = hex_code[hundreds] + (hex_code[thousands] << 8);
-    int last_4_digits = (hex_code[tens] << 24) + (hex_code[ones] << 16);
-    *(HEX_ptr2) = first_2_digits;
-    *(HEX_ptr) = last_4_digits;
-}
-
 int ceil_float(float x)
 {
     int i = (int)x;
@@ -136,12 +145,13 @@ int main(void)
     *led_dir_ptr = 0x000003FF;
     *led_base_ptr = 0x00000000;
 
-    while (1)
-    {
-        displayLight();
+    while (1) {
         setCurrentPlant();
+        displayLight();
         readSensors();
         getButtonInputs();
+
+        delay(5);
     }
 
     return 0;
