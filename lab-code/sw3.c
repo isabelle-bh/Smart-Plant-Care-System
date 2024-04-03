@@ -35,7 +35,6 @@ void ShowHex(int minutes, int seconds, int hundredths)
 int ReadSwitches(void)
 {
     volatile unsigned int *switchBankPtr = (unsigned int *)SW_BASE;
-
     // Read the state of the slide switch bank
     int switchBankState = *switchBankPtr;
     return switchBankState;

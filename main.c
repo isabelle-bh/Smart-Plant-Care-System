@@ -19,20 +19,26 @@
 
 #define HEX3_HEX0_BASE 0x00000000 // 0xFF200020
 #define HEX3_HEX1_BASE 0x00000000 // 0xFF200030
-
+#define LED_BASE 0x00000000
+#define ADC_C1 0xFF204004 // write 1 to bit 15 for auto-update
 #define BTN_BASE 0xFF200050
 #define SW_BASE 0x00000000
+#define LED_DIR 0xFF200064
 
 extern struct species_profile plant_profiles[];
 #define NUM_SWITCHES 4
 
-volatile struct plant_status plant_readings;
+volatile struct plant_status plant_readings = {0, 0};
 volatile struct species_profile current_plant;
 
 volatile int *HEX_ptr = (int *)HEX3_HEX0_BASE; // hex address
 volatile int *HEX_ptr2 = (int *)HEX3_HEX1_BASE;
+volatile unsigned int *led_base_ptr = (unsigned int *)LED_BASE;
+volatile unsigned int *led_dir_ptr = (unsigned int *)LED_DIR;
+volatile uint32_t *c1_ptr = (uint32_t *)ADC_C1;
 
 volatile int timer_done = 0; // 1 when its been x amount of time
+volatile int max_light = 35; // watts per sqft
 
 int checkTimer(void)
 {
@@ -92,14 +98,10 @@ void displayHex(float value)
 {
 
     int num = round(value);
-
     int thousands = num / 1000 % 10;
     int hundreds = num / 100 % 10;
     int tens = num / 10 % 10;
     int ones = num % 10;
-
-    printf("thousands %d\n", thousands);
-    printf("hund %d\n", hundreds);
 
     int hex_code[10] = {0x3F, 0x06, 0x5B, 0x4F, 0x66, 0x6D, 0xFD, 0x07, 0x7F, 0x67};
     int first_2_digits = hex_code[hundreds] + (hex_code[thousands] << 8);
@@ -108,21 +110,38 @@ void displayHex(float value)
     *(HEX_ptr) = last_4_digits;
 }
 
-float truncate(float num)
+int ceil_float(float x)
 {
-    return (int)(num * 100) / 100.0f;
+    int i = (int)x;
+    return (x > i) ? (i + 1) : i;
 }
 
-void displayLight()
+void readSensors(void)
 {
+    plant_readings.soil_moisture = get_moisture(1); // adc channel 1
+    plant_readings.humidity = get_humidity(2);      // adc channel 2
+}
+
+void displayLight(void)
+{
+    int light_ratio = (int)ceil_float(((float)current_plant.light / (float)max_light) * 10);
+    unsigned int led_intensity[11] = {0x000, 0x200, 0x300, 0x380, 0x3C0, 0x3E0, 0x3F0, 0x3F8, 0x3FC, 0x3FE, 0x3FF};
+    unsigned int bitmask = 0x3FF;
+    *led_base_ptr = led_intensity[light_ratio] & bitmask;
 }
 
 int main(void)
 {
+    *c1_ptr |= 0b1;
+    *led_dir_ptr = 0x000003FF;
+    *led_base_ptr = 0x00000000;
+
     while (1)
     {
+        displayLight();
         setCurrentPlant();
-        int moisture = get_moisture(1);
+        readSensors();
+        getButtonInputs();
     }
 
     return 0;
