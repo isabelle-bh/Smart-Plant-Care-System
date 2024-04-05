@@ -1,6 +1,7 @@
 #include "plant_profile.h"
 #include "adc_functions.h"
 #include <stdio.h>
+
 #define MOISTURE_SENSOR_BASE 0xFF200020
 #define HUMIDITY_SENSOR_BASE 0xFF200020
 volatile int *moisture_ptr = (int *)MOISTURE_SENSOR_BASE;
@@ -12,6 +13,7 @@ void print_plant_status(struct plant_status plant, struct species_profile profil
     printf("Current Soil Moisture:  %f [unit], Ideal Soil Moisture:  %f [unit]", plant.soil_moisture, profile.soil_moisture);
 }
 
+// reads plant moisture from specified adc channel
 float get_moisture(int moisture_channel)
 {
     int moisture_value = readADCChannel(moisture_channel);
@@ -20,6 +22,7 @@ float get_moisture(int moisture_channel)
     return moisture_float;
 }
 
+// reads plant humidity from specified adc channel
 float get_humidity(int humidity_channel)
 {
     int humidity_value = readADCChannel(humidity_channel);
@@ -34,18 +37,10 @@ struct species_profile *get_profiles(void)
     return plant_profiles;
 }
 
+// predefined plant species with different care needs and ideal sensor values
 struct species_profile plant_profiles[] = {
     {"Golden Barrel Cactus", 20.0, 40.0, 20, 14},
     {"Broccoli Microgreen", 60.0, 50.0, 30, 8},
     {"Orchid", 30.0, 60.0, 15, 7},
     {"Aloe Vera", 25.0, 40.0, 20, 12},
 };
-
-/*
-void print_plant_info(struct plant_profile plant)
-{
-    printf("Plant Name: %s\n", plant.name);
-    printf("Height: %d cm\n", plant.height_cm);
-    printf("Light Intensity: %.2f lumens\n", plant.light_intensity);
-}
-*/

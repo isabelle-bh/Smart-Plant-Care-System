@@ -1,23 +1,25 @@
+
 #ifndef PLANT_PROFILE_H
 #define PLANT_PROFILE_H
 
 struct species_profile
 {
-    char name[50]; // name of plant species/type
-    float soil_moisture;
-    float humidity;     //
-    int light;          // watts per sqft
-    int light_duration; // hours of exposure needed per day
+    char name[50];       // name of plant species/type
+    float soil_moisture; // in %
+    float humidity;      // in %
+    int light;           // watts per sqft
+    int light_duration;  // hours of exposure needed per day
 };
 
 struct plant_environment
 {
-    float sqft;         // Between 0.5 and 3
+    float sqft;         // Used for calculating light intensity (watts/sqft)
     int light_exposure; // 1: low, 2: medium, 3: high/direct (for simplicity)
-    float soil_volume;  // to determine how much water
-    float humidity;
+    float soil_volume;  // to determine how much water to give
+    float humidity;     // default air humidity
 };
 
+// to hold  the plant sensor readings in main
 struct plant_status
 {
     float soil_moisture;
