@@ -1,6 +1,7 @@
 #include "plant_profile.h"
 #include "adc_functions.h"
 #include <stdio.h>
+
 #define MOISTURE_SENSOR_BASE 0xFF200020
 #define HUMIDITY_SENSOR_BASE 0xFF200020
 volatile int *moisture_ptr = (int *)MOISTURE_SENSOR_BASE;
@@ -40,12 +41,3 @@ struct species_profile plant_profiles[] = {
     {"Orchid", 30.0, 60.0, 15, 7},
     {"Aloe Vera", 25.0, 40.0, 20, 12},
 };
-
-/*
-void print_plant_info(struct plant_profile plant)
-{
-    printf("Plant Name: %s\n", plant.name);
-    printf("Height: %d cm\n", plant.height_cm);
-    printf("Light Intensity: %.2f lumens\n", plant.light_intensity);
-}
-*/

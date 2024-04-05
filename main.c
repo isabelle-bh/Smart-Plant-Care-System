@@ -4,26 +4,17 @@
 #include <stdint.h>
 #include <math.h>
 
-/*
-#define LED_BASE 0xFF200000
-#define HEX3_HEX0_BASE 0xFF200020
-#define HEX3_HEX1_BASE 0xFF200030
-#define SW_BASE 0xFF200040
-#define TIMER_BASE 0xFFFEC600
-#define ADC_C0 0xFF204000
+#define ADC_C0 0xFF204000       // 0xFF204000
 #define ADC_C1 0xFF204004       // write 1 to bit 15 for auto-update
+                                // read channel 0
 #define mask_12_bits 0x00000FFF // 12 lsb to read channel input
 #define LED_BASE 0xFF200060     // write led voltage to this
 #define LED_DIR 0xFF200064      // write 1 to specify output
-*/
+#define SW_BASE 0xFF200040      // to select which volatge
 
-#define HEX3_HEX0_BASE 0x00000000 // 0xFF200020
-#define HEX3_HEX1_BASE 0x00000000 // 0xFF200030
-#define LED_BASE 0x00000000
-#define ADC_C1 0xFF204004 // write 1 to bit 15 for auto-update
+#define HEX3_HEX0_BASE 0xFF200020
+#define HEX3_HEX1_BASE 0xFF200030
 #define BTN_BASE 0xFF200050
-#define SW_BASE 0x00000000
-#define LED_DIR 0xFF200064
 
 extern struct species_profile plant_profiles[];
 #define NUM_SWITCHES 4
@@ -64,9 +55,23 @@ void delay(int seconds)
     }
 }
 
+int round(float num)
+{
+    int intPart = (int)num;
+    float fractionalPart = num - intPart;
+
+    if (fractionalPart >= 0.5)
+    {
+        return intPart + 1;
+    }
+    else
+    {
+        return intPart;
+    }
+}
+
 void displayHex(float value)
 {
-
     int num = round(value);
     int thousands = num / 1000 % 10;
     int hundreds = num / 100 % 10;
@@ -84,6 +89,7 @@ int getButtonInputs(void)
 {
     // Declare a pointer to the button's memory-mapped I/O address
     volatile unsigned int *buttonPtr = (unsigned int *)BTN_BASE;
+
     unsigned int buttonState = *buttonPtr;
 
     // Read the state of the button
@@ -93,11 +99,21 @@ int getButtonInputs(void)
     {
         float soil_moisture = plant_readings.soil_moisture;
         displayHex(soil_moisture);
+        printf("Current Soil Moisture: %f\n", soil_moisture / 100);
+        printf("Ideal Soil Moisture Levels for %s: %f\n", current_plant.name, current_plant.soil_moisture);
     }
     else if (buttonState == 2)
     {
         float humidity = plant_readings.humidity;
         displayHex(humidity);
+        printf("Current Surrounding Humidity Levels: %f\n", humidity / 100);
+        printf("Ideal Surrounding Humidity Levels for %s: %f\n", current_plant.name, current_plant.humidity);
+    }
+    else
+    {
+        float soil_moisture = plant_readings.soil_moisture;
+        displayHex(0000);
+        printf("Displaying nothing \n");
     }
 
     // Return the state of the button
@@ -114,7 +130,7 @@ void setCurrentPlant(void)
     if (switchState < NUM_SWITCHES)
     {
         current_plant = plant_profiles[switchState];
-        printf("Current plant set to: %s\n", current_plant.name);
+        printf("\nCurrent plant set to: %s\n\n", current_plant.name);
     }
     else
     {
@@ -131,7 +147,7 @@ int ceil_float(float x)
 void readSensors(void)
 {
     plant_readings.soil_moisture = get_moisture(1); // adc channel 1
-    plant_readings.humidity = get_humidity(2);      // adc channel 2
+    plant_readings.humidity = get_humidity(0);      // adc channel 2
 }
 
 void displayLight(void)
