@@ -26,7 +26,7 @@ int ReadSwitches(void)
     return switchBankState;
 }
 
-int GetInputs(int mins, int secs, int hss)
+int GetInputs()
 {
     volatile unsigned int *btnPtr = (unsigned int *)BTN_BASE;
     int btnState = *btnPtr;
@@ -50,12 +50,14 @@ void wait_for_timer() // loops until timer is finished counting
 int main(void)
 {
 
+    // start with all hex, and time values 0
     *(HEX_ptr) = 0x0;
     *(HEX_ptr2) = 0x0;
     int minutes = 0;
     int seconds = 0;
     int hundredths = 0;
     *load_register = 2000000;
+    // sp
     *control_register = 0b0011;
 
     while (1)
@@ -64,16 +66,17 @@ int main(void)
         {
             wait_for_timer();
 
-            if (hs >= 360000)
+            if (hs >= 360000) // checking hundreths of second
             {
                 hs = 0;
             }
 
+            // calculating all values to display on hex
             minutes = ((hs / 100) / 60) % 60;
             seconds = (hs / 100) % 60;
             hundredths = hs;
         }
-
-        GetInputs(minutes, seconds, hundredths);
+        // buttons to check paused etc.
+        GetInputs();
     }
 }
